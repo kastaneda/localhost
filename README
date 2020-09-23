@@ -1,0 +1,24 @@
+# Apache with mass virtual hosting
+apt install apache2
+a2enmod vhost_alias
+cp 000-default.conf /etc/apache2/sites-available
+service apache2 restart
+
+# PHP-FPM
+apt install php7.3-fpm
+a2enmod proxy_fcgi
+a2enconf php7.3-fpm
+service apache2 restart
+
+# This is default fot a host with systemd-resolved
+host anything.you.tupe.localhost
+anything.you.tupe.localhost has address 127.0.0.1
+anything.you.tupe.localhost has IPv6 address ::1
+
+mkdir /var/www/vhosts
+# To use mass virtual hosting, you can just create proper folder or symlink
+ln -rs ~/webdev/example.com /var/www/vhosts/example.localhost
+ln -rs ~/webdev/localhost /var/www/vhosts/localhost
+ln -rs ~/webdev/localhost /var/www/vhosts/127.0.0.1
+ln -rs ~/webdev/localhost /var/www/vhosts/::1
+
