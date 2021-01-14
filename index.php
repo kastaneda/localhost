@@ -40,9 +40,14 @@
   <body>
     <ul>
 <?php
+  // To match routeable host names
+  // like 'project-name.workstation.home'
   $mask = '*.' . gethostname() . '.home';
-  $ip = $_SERVER['REMOTE_ADDR'];
-  if ($ip == '127.0.0.1' || $ip == '::1') {
+
+  $remote_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+  $server_ip = $_SERVER['SERVER_ADDR'] ?? null;
+  if (in_array($remote_ip, ['127.0.0.1', '::1', $server_ip])) {
+    // To match all host names, except for IPs (127.0.0.1, etc)
     $mask = '[a-z]*';
   }
 
