@@ -1,4 +1,3 @@
-<?php $vhosts = array_map('basename', glob('/var/www/vhosts/[a-z]*')); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -41,6 +40,14 @@
   <body>
     <ul>
 <?php
+  $mask = '*.' . gethostname() . '.home';
+  $ip = $_SERVER['REMOTE_ADDR'];
+  if ($ip == '127.0.0.1' || $ip == '::1') {
+    $mask = '[a-z]*';
+  }
+
+  $vhosts = array_map('basename', glob('/var/www/vhosts/' . $mask));
+
   foreach($vhosts as $vhost) {
     mt_srand(crc32($vhost));
     $hue = mt_rand(0, 359);
