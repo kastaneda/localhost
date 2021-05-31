@@ -48,7 +48,7 @@
   $server_ip = $_SERVER['SERVER_ADDR'] ?? null;
   if (in_array($remote_ip, ['127.0.0.1', '::1', $server_ip])) {
     // To match all host names, except for IPs (127.0.0.1, etc)
-    $mask = '[a-z]*';
+    $mask = '*.localhost';
   }
 
   $vhosts = array_map('basename', glob('/var/www/vhosts/' . $mask));
