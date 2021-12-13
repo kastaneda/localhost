@@ -35,6 +35,11 @@
       }
 
       a:active { color: #fff; background: #444 !important }
+
+      @media (prefers-color-scheme: dark) {
+        body { background: #444 }
+        a:hover, a:focus { box-shadow: 0 0 10pt #afe7 }
+      }
     </style>
   </head>
   <body>
@@ -53,7 +58,16 @@
 
   $vhosts = array_map('basename', glob('/var/www/vhosts/' . $mask));
 
+  $skipList = [];
+  $skipFile = __DIR__ . '/skip-list.txt';
+  if (is_file($skipFile)) {
+    $skipList = explode("\n", file_get_contents($skipFile));
+  }
+
   foreach($vhosts as $vhost) {
+    if (in_array($vhost, $skipList)) {
+      continue;
+    }
     mt_srand(crc32($vhost));
     $hue = mt_rand(0, 359);
     $css = 'style="background: hsl(' . $hue . ', 80%, 80%)"';
@@ -62,6 +76,7 @@
   }
 ?>
       <li><a href="phpinfo.php">phpinfo();</a></li>
+      <li><a href="http://rico.home/">rico.home</a></li>
     </ul>
   </body>
 </html>
