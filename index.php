@@ -45,35 +45,49 @@
   <body>
     <ul>
 <?php
-  // To match routeable host names
-  // like 'project-name.workstation.home'
-  $mask = '*.' . gethostname() . '.home';
 
-  $remote_ip = $_SERVER['REMOTE_ADDR'] ?? '';
-  $server_ip = $_SERVER['SERVER_ADDR'] ?? null;
-  if (in_array($remote_ip, ['127.0.0.1', '::1', $server_ip])) {
-    // To match all host names, except for IPs (127.0.0.1, etc)
-    $mask = '*.localhost';
-  }
+    switch ($_SERVER['SERVER_NAME'] ?? null) {
+        case '127.0.0.1':
+        case '[::1]':
+        case 'localhost':
+            $mask = '*.localhost';
+            break;
 
-  $vhosts = array_map('basename', glob('/var/www/vhosts/' . $mask));
+        case gethostname() . '.home':
+            $mask = '*.' . gethostname() . '.home';
+            break;
 
-  $skipList = [];
-  $skipFile = __DIR__ . '/skip-list.txt';
-  if (is_file($skipFile)) {
-    $skipList = explode("\n", file_get_contents($skipFile));
-  }
+        case gethostname() . '.home.kastaneda.kiev.ua':
+            $mask = '*.' . gethostname() . '.home.kastaneda.kiev.ua';
+            break;
 
-  foreach($vhosts as $vhost) {
-    if (in_array($vhost, $skipList)) {
-      continue;
+        case 'coder.localhost':
+            $mask = '*.coder.localhost';
+            break;
+
+        default:
+            $mask = '*';
+            break;
     }
-    mt_srand(crc32($vhost));
-    $hue = mt_rand(0, 359);
-    $css = 'style="background: hsl(' . $hue . ', 80%, 80%)"';
-    $url = 'http://' . $vhost;
-    printf("      <li><a href=\"%s\" %s>%s</a></li>\n", $url, $css, $vhost);
-  }
+
+    $vhosts = array_map('basename', glob('/var/www/vhosts/' . $mask));
+
+    $skipList = [];
+    $skipFile = __DIR__ . '/skip-list.txt';
+    if (is_file($skipFile)) {
+        $skipList = explode("\n", file_get_contents($skipFile));
+    }
+
+    foreach($vhosts as $vhost) {
+        if (in_array($vhost, $skipList)) {
+            continue;
+        }
+        mt_srand(crc32($vhost));
+        $hue = mt_rand(0, 359);
+        $css = 'style="background: hsl(' . $hue . ', 80%, 80%)"';
+        $url = 'http://' . $vhost;
+        printf("      <li><a href=\"%s\" %s>%s</a></li>\n", $url, $css, $vhost);
+    }
 ?>
       <li><a href="phpinfo.php">phpinfo();</a></li>
       <li><a href="http://rico.home/">rico.home</a></li>
