@@ -50,19 +50,19 @@
         case '127.0.0.1':
         case '[::1]':
         case 'localhost':
-            $mask = '*.localhost';
+            $re = '/^[a-z0-9\-]+\.localhost$/';
             break;
 
         case gethostname() . '.home':
-            $mask = '*.' . gethostname() . '.home';
+            $re = '/^[a-z0-9\-]+\.' . gethostname() . '\.home$/';
             break;
 
         case gethostname() . '.home.kastaneda.kiev.ua':
-            $mask = '*.' . gethostname() . '.home.kastaneda.kiev.ua';
+            $re = '/^[a-z0-9\-]+\.' . gethostname() . '\.home\.kastaneda\.kiev\.ua$/';
             break;
 
         case 'coder.localhost':
-            $mask = '*.coder.localhost';
+            $re = '/^[a-z0-9\-]+\.coder\.localhost$/';
             break;
 
         default:
@@ -70,7 +70,7 @@
             break;
     }
 
-    $vhosts = array_map('basename', glob('/var/www/vhosts/' . $mask));
+    $vhosts = array_map('basename', glob('/var/www/vhosts/*'));
 
     $skipList = [];
     $skipFile = __DIR__ . '/skip-list.txt';
@@ -79,7 +79,7 @@
     }
 
     foreach($vhosts as $vhost) {
-        if (in_array($vhost, $skipList)) {
+        if (in_array($vhost, $skipList) || !preg_match($re, $vhost)) {
             continue;
         }
         mt_srand(crc32($vhost));
@@ -90,7 +90,7 @@
     }
 ?>
       <li><a href="phpinfo.php">phpinfo();</a></li>
-      <li><a href="http://rico.home/">rico.home</a></li>
+      <!-- li><a href="http://rico.home/">rico.home</a></li -->
     </ul>
   </body>
 </html>
