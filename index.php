@@ -23,6 +23,7 @@
       a {
         display: block;
         width: 15em;
+        overflow: clip;
         padding: 1em;
         background: #aec;
         border-radius: .5em 
